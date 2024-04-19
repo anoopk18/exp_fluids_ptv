@@ -18,7 +18,7 @@ STDs = [];
 lags = [];
 %iterating o'er possible time lags
 for j = 1:maxTimeLag  
-    dispList = [];  % initializing to collect displacements for this lag
+    deltaRsq = [];  % initializing to collect displacements for this lag
     for trackID = 1:numTracks
         %extracting data for this particular track assignment
         trackData = data(data(:,4) == trackID, :);  
@@ -28,13 +28,13 @@ for j = 1:maxTimeLag
             % squared displacement calculation
             dx = trackData(i + j, 1) - trackData(i, 1);
             dy = trackData(i + j, 2) - trackData(i, 2);
-            dispList = [dispList; dx^2 + dy^2];
+            deltaRsq = [deltaRsq; dx^2 + dy^2];
         end
     end
-    if ~isempty(dispList)
+    if ~isempty(deltaRsq)
         % mean and std dev calc
-        meanDisp = mean(dispList);
-        stdDisp = std(dispList);
+        meanDisp = mean(deltaRsq);
+        stdDisp = sqrt(abs(meanDisp.^2 - mean(deltaRsq.^2)));
         MSDs = [MSDs;meanDisp];
         STDs = [STDs;stdDisp];
         lags = [lags;j];
